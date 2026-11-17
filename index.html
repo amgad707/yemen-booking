@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وجهتي - لحجز الفنادق والمطاعم في اليمن</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- الشريط العلوي -->
+    <header>
+        <div class="container header-content">
+            <h1 class="logo">وجهتي <span>اليمن</span></h1>
+            <nav>
+                <a href="#places">الأماكن</a>
+                <a href="#about">عن المنصة</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- قسم البحث الرئيسي -->
+    <section class="hero">
+        <div class="container">
+            <h2>اكتشف واحجز أفضل الفنادق والمطاعم في اليمن</h2>
+            <p>أسعار واضحة، حجز فوري، وتجربة سهلة في جميع المحافظات</p>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="ابحث باسم الفندق أو المطعم...">
+                <select id="cityFilter">
+                    <option value="all">كل المدن</option>
+                    <option value="صنعاء">صنعاء</option>
+                    <option value="عدن">عدن</option>
+                    <option value="تعز">تعز</option>
+                    <option value="المكلا">المكلا</option>
+                </select>
+                <select id="typeFilter">
+                    <option value="all">الكل (فنادق ومطاعم)</option>
+                    <option value="فندق">فنادق</option>
+                    <option value="مطعم">مطاعم</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم عرض الأماكن -->
+    <section id="places" class="container places-section">
+        <h3>الأماكن المتاحة للحجز</h3>
+        <div id="placesGrid" class="places-grid">
+            <!-- سيتم تعبئة البطاقات هنا تلقائياً عبر الجافاسكربت -->
+        </div>
+    </section>
+
+    <!-- نافذة الحجز (تظهر عند الضغط على زر احجز) -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle">حجز جديد</h3>
+            <form id="bookingForm">
+                <label>الاسم الكامل:</label>
+                <input type="text" id="customerName" required placeholder="أدخل اسمك">
+                
+                <label>رقم الجوال (واتساب):</label>
+                <input type="tel" id="customerPhone" required placeholder="77xxxxxxx">
+                
+                <label>تاريخ الحجز:</label>
+                <input type="date" id="bookingDate" required>
+                
+                <button type="submit" class="btn-primary">تأكيد الحجز الآن</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
