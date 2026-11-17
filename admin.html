@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - وجهتي اليمن</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; margin-top: 30px; }
+        @media (max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
+        .box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
+        .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
+        .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: right; }
+        th { background-color: #0f2942; color: white; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+            <h1 class="logo">لوحة تحكم <span>وجهتي</span></h1>
+            <nav>
+                <a href="index.html">عرض الموقع الرئيسي ↗</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container admin-grid">
+        <!-- قسم إضافة فندق أو مطعم -->
+        <div class="box">
+            <h3>➕ إضافة فندق أو مطعم جديد</h3>
+            <form id="addPlaceForm" style="margin-top: 15px;">
+                <div class="form-group">
+                    <label>اسم المكان:</label>
+                    <input type="text" id="pName" required placeholder="مثال: فندق تاج سبأ">
+                </div>
+                <div class="form-group">
+                    <label>المدينة:</label>
+                    <select id="pCity">
+                        <option value="صنعاء">صنعاء</option>
+                        <option value="عدن">عدن</option>
+                        <option value="تعز">تعز</option>
+                        <option value="المكلا">المكلا</option>
+                        <option value="إب">إب</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>النوع:</label>
+                    <select id="pType">
+                        <option value="فندق">فندق</option>
+                        <option value="مطعم">مطعم</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>السعر:</label>
+                    <input type="text" id="pPrice" required placeholder="مثال: 60$ / ليلة">
+                </div>
+                <div class="form-group">
+                    <label>العنوان:</label>
+                    <input type="text" id="pAddress" placeholder="الحي والشارع">
+                </div>
+                <div class="form-group">
+                    <label>وصف المكان:</label>
+                    <textarea id="pDesc" rows="3" placeholder="نبذة عن المكان وخدماته..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>المميزات (افصل بينها بفاصلة):</label>
+                    <input type="text" id="pFeatures" placeholder="واي فاي, إفطار, مواقف سيارات">
+                </div>
+                <div class="form-group">
+                    <label>رابط الصورة (URL):</label>
+                    <input type="url" id="pImage" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>رابط الموقع على خرائط جوجل:</label>
+                    <input type="url" id="pMap" placeholder="https://maps.google.com/...">
+                </div>
+                <button type="submit" class="btn-primary">حفظ ونشر المكان</button>
+            </form>
+        </div>
+
+        <!-- قسم عرض الحجوزات الواردة -->
+        <div class="box">
+            <h3>📋 الحجوزات الواردة من الزبائن</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>المكان</th>
+                            <th>اسم الزبون</th>
+                            <th>الجوال</th>
+                            <th>التاريخ</th>
+                            <th>العدد</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingsTable">
+                        <tr><td colspan="5">جاري تحميل الحجوزات...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = "https://eqjhjlmdbpkofvwwyzne.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_42tlbQp9lwZsOD8kku_b2w_vIvorKq3";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // إضافة مكان جديد
+        document.getElementById("addPlaceForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const newPlace = {
+                name: document.getElementById("pName").value,
+                city: document.getElementById("pCity").value,
+                type: document.getElementById("pType").value,
+                price: document.getElementById("pPrice").value,
+                address: document.getElementById("pAddress").value,
+                description: document.getElementById("pDesc").value,
+                features: document.getElementById("pFeatures").value,
+                image: document.getElementById("pImage").value,
+                map_url: document.getElementById("pMap").value
+            };
+
+            const { error } = await supabaseClient.from('places').insert([newPlace]);
+            if (error) {
+                alert("حدث خطأ: " + error.message);
+            } else {
+                alert("تم إضافة المكان بنجاح! سيظهر الآن في الموقع الرئيسي.");
+                this.reset();
+            }
+        });
+
+        // جلب وعرض الحجوزات
+        async function loadBookings() {
+            const { data, error } = await supabaseClient
+                .from('bookings')
+                .select('*')
+                .order('id', { ascending: false });
+
+            const tbody = document.getElementById("bookingsTable");
+            if (error || !data || data.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='5'>لا توجد حجوزات مسجلة بعد.</td></tr>";
+                return;
+            }
+
+            tbody.innerHTML = data.map(b => `
+                <tr>
+                    <td><strong>${b.place_name}</strong></td>
+                    <td>${b.customer_name}</td>
+                    <td><a href="tel:${b.customer_phone}">${b.customer_phone}</a></td>
+                    <td>${b.booking_date}</td>
+                    <td>${b.guests_count}</td>
+                </tr>
+            `).join("");
+        }
+
+        loadBookings();
+    </script>
+</body>
+</html>

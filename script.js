@@ -1,73 +1,49 @@
-// ضع رقم واتساب إدارة الحجوزات هنا (مفتاح اليمن 967 + الرقم بدون صفر)
-const ADMIN_WHATSAPP = "967776575785";
+const SUPABASE_URL = "https://eqjhjlmdbpkofvwwyzne.supabase.co";
+const SUPABASE_KEY = "sb_publishable_42tlbQp9lwZsOD8kku_b2w_vIvorKq3";
+const ADMIN_WHATSAPP = "967770000000";
 
-const places = [
-    {
-        id: 1,
-        name: "فندق موفنبيك صنعاء",
-        city: "صنعاء",
-        type: "فندق",
-        price: "80$ / ليلة",
-        address: "حي حدة، شارع بيروت، صنعاء",
-        description: "فندق 5 نجوم يوفر إقامة فاخرة وإطلالة مميزة على العاصمة مع غرف مجهزة بالكامل وخدمة غرف على مدار الساعة.",
-        features: ["واي فاي مجاني", "إفطار مشمول", "مواقف سيارات", "نادي رياضي"],
-        mapUrl: "https://maps.google.com/?q=15.3262,44.1910",
-        image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600"
-    },
-    {
-        id: 2,
-        name: "مطعم الحمراء السياحي",
-        city: "صنعاء",
-        type: "مطعم",
-        price: "متوسط 15$ للشخص",
-        address: "شارع حدة، جولة المصباحي، صنعاء",
-        description: "يقدم أشهى المأكولات اليمنية التقليدية والعربية في أجواء عائلية راقية وجلسات خاصة.",
-        features: ["قسم خاص للعائلات", "توصيل طلبات", "جلسات خارجية", "واي فاي"],
-        mapUrl: "https://maps.google.com/?q=15.3350,44.1950",
-        image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600"
-    },
-    {
-        id: 3,
-        name: "فندق كورال عدن",
-        city: "عدن",
-        type: "فندق",
-        price: "70$ / ليلة",
-        address: "خور مكسر، بالقرب من الكورنيش، عدن",
-        description: "إقامة مريحة بالقرب من ساحل أبين والمطار، مثالي لرجال الأعمال والعائلات.",
-        features: ["قريب من البحر", "تكييف مركزي", "واي فاي مجاني", "مطعم داخلي"],
-        mapUrl: "https://maps.google.com/?q=12.8050,45.0360",
-        image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600"
-    },
-    {
-        id: 4,
-        name: "مطعم البغدادي للمأكولات البحرية",
-        city: "المكلا",
-        type: "مطعم",
-        price: "متوسط 12$ للشخص",
-        address: "الديس، شارع الستين، المكلا",
-        description: "أسماك طازجة يومياً من بحر العرب تُحضّر على الطريقة الحضرمية الأصيلة.",
-        features: ["أسماك طازجة", "جلسات عائلية", "توصيل سريع"],
-        mapUrl: "https://maps.google.com/?q=14.5425,49.1242",
-        image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600"
-    }
-];
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+let allPlaces = [];
 const placesGrid = document.getElementById("placesGrid");
 const searchInput = document.getElementById("searchInput");
 const cityFilter = document.getElementById("cityFilter");
 const typeFilter = document.getElementById("typeFilter");
 
+// جلب الأماكن من قاعدة البيانات
+async function loadPlaces() {
+    placesGrid.innerHTML = "<p>جاري تحميل الأماكن...</p>";
+    const { data, error } = await supabaseClient
+        .from('places')
+        .select('*')
+        .order('id', { ascending: false });
+
+    if (error) {
+        console.error("خطأ في جلب البيانات:", error);
+        placesGrid.innerHTML = "<p>حدث خطأ أثناء تحميل البيانات.</p>";
+        return;
+    }
+
+    allPlaces = data || [];
+    displayPlaces(allPlaces);
+}
+
 // عرض البطاقات
 function displayPlaces(list) {
     placesGrid.innerHTML = "";
+    if (list.length === 0) {
+        placesGrid.innerHTML = "<p>لا توجد أماكن مضافة حالياً. ادخل إلى <a href='admin.html'>لوحة التحكم</a> لإضافة أول فندق أو مطعم!</p>";
+        return;
+    }
+
     list.forEach(place => {
         placesGrid.innerHTML += `
             <div class="card">
-                <img src="${place.image}" alt="${place.name}">
+                <img src="${place.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600'}" alt="${place.name}">
                 <div class="card-body">
                     <span class="badge">${place.city} - ${place.type}</span>
                     <h4>${place.name}</h4>
-                    <p style="font-size: 13px; color: #666;">📍 ${place.address}</p>
+                    <p style="font-size: 13px; color: #666;">📍 ${place.address || ''}</p>
                     <p class="price">${place.price}</p>
                     <div class="card-actions">
                         <button class="btn-secondary" onclick="openDetailsModal(${place.id})">التفاصيل</button>
@@ -85,8 +61,8 @@ function filterPlaces() {
     const selectedCity = cityFilter.value;
     const selectedType = typeFilter.value;
 
-    const filtered = places.filter(place => {
-        const matchName = place.name.toLowerCase().includes(searchText) || place.address.toLowerCase().includes(searchText);
+    const filtered = allPlaces.filter(place => {
+        const matchName = place.name.toLowerCase().includes(searchText) || (place.address && place.address.toLowerCase().includes(searchText));
         const matchCity = selectedCity === "all" || place.city === selectedCity;
         const matchType = selectedType === "all" || place.type === selectedType;
         return matchName && matchCity && matchType;
@@ -101,19 +77,20 @@ typeFilter.addEventListener("change", filterPlaces);
 
 // نافذة التفاصيل
 function openDetailsModal(id) {
-    const place = places.find(p => p.id === id);
+    const place = allPlaces.find(p => p.id === id);
     if (!place) return;
 
-    document.getElementById("detailImage").src = place.image;
+    document.getElementById("detailImage").src = place.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600';
     document.getElementById("detailBadge").innerText = `${place.city} - ${place.type}`;
     document.getElementById("detailName").innerText = place.name;
-    document.getElementById("detailAddress").innerText = "📍 العنوان: " + place.address;
-    document.getElementById("detailDesc").innerText = place.description;
+    document.getElementById("detailAddress").innerText = "📍 العنوان: " + (place.address || "غير محدد");
+    document.getElementById("detailDesc").innerText = place.description || "";
     document.getElementById("detailPrice").innerText = place.price;
-    document.getElementById("detailMapLink").href = place.mapUrl;
+    document.getElementById("detailMapLink").href = place.map_url || "#";
 
+    const featuresArray = place.features ? place.features.split(",") : [];
     const featuresContainer = document.getElementById("detailFeatures");
-    featuresContainer.innerHTML = place.features.map(f => `<span class="feature-tag">✓ ${f}</span>`).join("");
+    featuresContainer.innerHTML = featuresArray.map(f => `<span class="feature-tag">✓ ${f.trim()}</span>`).join("");
 
     document.getElementById("detailBookBtn").onclick = function() {
         closeDetailsModal();
@@ -139,13 +116,27 @@ function closeBookingModal() {
     document.getElementById("bookingModal").style.display = "none";
 }
 
-// إرسال الحجز إلى واتساب
-document.getElementById("bookingForm").addEventListener("submit", function(e) {
+// حفظ الحجز في قاعدة البيانات + فتح واتساب
+document.getElementById("bookingForm").addEventListener("submit", async function(e) {
     e.preventDefault();
     const name = document.getElementById("customerName").value;
     const phone = document.getElementById("customerPhone").value;
     const date = document.getElementById("bookingDate").value;
-    const guests = document.getElementById("guestsCount").value;
+    const guests = parseInt(document.getElementById("guestsCount").value);
+
+    const { error } = await supabaseClient
+        .from('bookings')
+        .insert([{
+            place_name: currentPlace,
+            customer_name: name,
+            customer_phone: phone,
+            booking_date: date,
+            guests_count: guests
+        }]);
+
+    if (error) {
+        console.error("خطأ في حفظ الحجز:", error);
+    }
 
     const message = `مرحباً، أرغب بتأكيد حجز جديد عبر منصة *وجهتي اليمن*:%0A` +
                     `🏨 *المكان:* ${currentPlace}%0A` +
@@ -154,11 +145,10 @@ document.getElementById("bookingForm").addEventListener("submit", function(e) {
                     `📅 *التاريخ:* ${date}%0A` +
                     `👥 *العدد (أشخاص/غرف):* ${guests}`;
 
-    const whatsappUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${message}`;
-    window.open(whatsappUrl, "_blank");
+    window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${message}`, "_blank");
 
     closeBookingModal();
     this.reset();
 });
 
-displayPlaces(places);
+loadPlaces();

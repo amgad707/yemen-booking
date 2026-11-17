@@ -14,7 +14,7 @@
             <h1 class="logo">وجهتي <span>اليمن</span></h1>
             <nav>
                 <a href="#places">الأماكن</a>
-                <a href="#about">عن المنصة</a>
+                <a href="admin.html">لوحة التحكم</a>
             </nav>
         </div>
     </header>
@@ -33,6 +33,7 @@
                     <option value="عدن">عدن</option>
                     <option value="تعز">تعز</option>
                     <option value="المكلا">المكلا</option>
+                    <option value="إب">إب</option>
                 </select>
                 <select id="typeFilter">
                     <option value="all">الكل (فنادق ومطاعم)</option>
@@ -47,7 +48,7 @@
     <section id="places" class="container places-section">
         <h3>الأماكن المتاحة للحجز</h3>
         <div id="placesGrid" class="places-grid">
-            <!-- البطاقات تظهر هنا تلقائياً -->
+            <!-- البطاقات تظهر هنا تلقائياً من قاعدة البيانات -->
         </div>
     </section>
 
@@ -79,7 +80,7 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeBookingModal()">&times;</span>
             <h3 id="modalTitle">حجز جديد</h3>
-            <p style="font-size: 13px; color: #666; margin-top: 5px;">سيتم تحويلك إلى الواتساب لتأكيد الحجز مباشرة</p>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">سيتم حفظ طلبك وتحويلك إلى الواتساب لتأكيد الحجز مباشرة</p>
             <form id="bookingForm">
                 <label>الاسم الكامل:</label>
                 <input type="text" id="customerName" required placeholder="أدخل اسمك الثلاثي">
@@ -98,6 +99,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 </body>
 </html>
