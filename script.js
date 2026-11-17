@@ -1,6 +1,6 @@
 const SUPABASE_URL = "https://eqjhjlmdbpkofvwwyzne.supabase.co";
 const SUPABASE_KEY = "sb_publishable_42tlbQp9lwZsOD8kku_b2w_vIvorKq3";
-const ADMIN_WHATSAPP = "967770000000";
+const ADMIN_WHATSAPP = "967776575785";
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
