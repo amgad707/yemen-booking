@@ -23,7 +23,7 @@
     <section class="hero">
         <div class="container">
             <h2>اكتشف واحجز أفضل الفنادق والمطاعم في اليمن</h2>
-            <p>أسعار واضحة، حجز فوري، وتجربة سهلة في جميع المحافظات</p>
+            <p>أسعار واضحة، حجز فوري عبر الواتساب، وتجربة سهلة في جميع المحافظات</p>
             
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="ابحث باسم الفندق أو المطعم...">
@@ -47,26 +47,53 @@
     <section id="places" class="container places-section">
         <h3>الأماكن المتاحة للحجز</h3>
         <div id="placesGrid" class="places-grid">
-            <!-- سيتم تعبئة البطاقات هنا تلقائياً عبر الجافاسكربت -->
+            <!-- البطاقات تظهر هنا تلقائياً -->
         </div>
     </section>
 
-    <!-- نافذة الحجز (تظهر عند الضغط على زر احجز) -->
+    <!-- نافذة تفاصيل المكان -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content details-box">
+            <span class="close-btn" onclick="closeDetailsModal()">&times;</span>
+            <img id="detailImage" src="" alt="صورة المكان" class="detail-img">
+            <span id="detailBadge" class="badge"></span>
+            <h3 id="detailName" style="margin-top: 10px;"></h3>
+            <p id="detailAddress" class="detail-address"></p>
+            <p id="detailDesc" class="detail-desc"></p>
+            
+            <h4>الخدمات والمميزات:</h4>
+            <div id="detailFeatures" class="features-list"></div>
+            
+            <div class="detail-footer">
+                <span id="detailPrice" class="price"></span>
+                <div class="detail-actions">
+                    <a id="detailMapLink" href="#" target="_blank" class="btn-secondary">📍 الموقع على الخريطة</a>
+                    <button id="detailBookBtn" class="btn-primary">احجز الآن</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة الحجز عبر الواتساب -->
     <div id="bookingModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <span class="close-btn" onclick="closeBookingModal()">&times;</span>
             <h3 id="modalTitle">حجز جديد</h3>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">سيتم تحويلك إلى الواتساب لتأكيد الحجز مباشرة</p>
             <form id="bookingForm">
                 <label>الاسم الكامل:</label>
-                <input type="text" id="customerName" required placeholder="أدخل اسمك">
+                <input type="text" id="customerName" required placeholder="أدخل اسمك الثلاثي">
                 
-                <label>رقم الجوال (واتساب):</label>
+                <label>رقم الجوال:</label>
                 <input type="tel" id="customerPhone" required placeholder="77xxxxxxx">
                 
                 <label>تاريخ الحجز:</label>
                 <input type="date" id="bookingDate" required>
+
+                <label>عدد الأشخاص / الغرف:</label>
+                <input type="number" id="guestsCount" min="1" value="1" required>
                 
-                <button type="submit" class="btn-primary">تأكيد الحجز الآن</button>
+                <button type="submit" class="btn-whatsapp">إرسال الطلب عبر واتساب 💬</button>
             </form>
         </div>
     </div>
